@@ -1,9 +1,17 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Unlit/Shader1"
+Shader "Unlit/ShaderScreen1"
 {
-	SubShader
+
+	Properties
 	{
+		_MainTex("Texture", 2D) = "white" {}
+		_DisplacementMap("DisplacementMap", 2D) = "black" {}
+		_Magnitude("Magnitude", Range(-0.1,0.1)) = 0
+	}
+
+	SubShader
+	{		
 		Pass
 		{
 			CGPROGRAM
@@ -31,10 +39,15 @@ Shader "Unlit/Shader1"
 				return o;
 			}
 			
+			sampler2D _MainTex;
+			sampler2D _DisplacementMap;
+			float _Magnitude;
+
 			fixed4 frag (v2f i) : SV_Target
 			{
-				// float4 color = float4(i.uv.r * i.vertex.x/250, i.uv.g, i.vertex.y/500, 1);
-				float4 color = float4(0, i.uv.g, i.uv.r, 1);
+				float2 displacement = tex2D(_DisplacementMap, i.uv).xy;
+				displacement = ((displacement * 2) - 1) * _Magnitude;
+				float4 color = tex2D(_MainTex, i.uv + displacement);
 				return color;
 			}
 			ENDCG
