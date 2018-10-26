@@ -6,7 +6,7 @@ Shader "Unlit/ShaderScreen1"
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
-		_DisplacementMap("DisplacementMap", 2D) = "black" {}
+		_DisplacementMap("DisplacementMap", 2D) = "white" {}
 		_Magnitude("Magnitude", Range(-0.1,0.1)) = 0
 	}
 
@@ -42,10 +42,12 @@ Shader "Unlit/ShaderScreen1"
 			sampler2D _MainTex;
 			sampler2D _DisplacementMap;
 			float _Magnitude;
+			
 
 			fixed4 frag (v2f i) : SV_Target
 			{
-				float2 displacement = tex2D(_DisplacementMap, i.uv).xy;
+				float2 uvdispl = float2(i.uv.x + _Time.x, i.uv.y + _Time.x);
+				float2 displacement = tex2D(_DisplacementMap, uvdispl).xy;
 				displacement = ((displacement * 2) - 1) * _Magnitude;
 				float4 color = tex2D(_MainTex, i.uv + displacement);
 				return color;
